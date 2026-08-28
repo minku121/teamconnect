@@ -1,0 +1,142 @@
+datasource db {
+  provider = "postgresql" 
+  url      = env("DATABASE_URL") 
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  password      String?
+  name          String?
+  notifications Notification[]
+  activities    Activity[]
+  rating        Float?
+  profilePic    String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  // Relations
+  createdEvents Event[]        @relation("EventCreator")
+  joinedEvents  Event[]        @relation("EventParticipant")
+  certificates  Certificate[]
+  eventAttendees EventAttendee[]
+  
+  eventsCreated Int            @default(0) @map("events_created")
+  eventsJoined  Int            @default(0) @map("events_joined")
+
+  @@map("users")
+}
+
+model Event {
+  id           Int        @id @default(autoincrement())
+  name         String
+  description  String     @default("")
+  location     String?
+  image        String?    @default("https://i.sstatic.net/y9DpT.jpg")
+  startTime    DateTime   @default(now())
+  endTime      DateTime   @default(dbgenerated("(now() + interval '1 hour')"))
+  analytics    EventAnalytics?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  ispublic     Boolean    @default(true)
+  islimited    Boolean    @default(false)
+  maxParticipants Int?
+  createdBy    User       @relation("EventCreator", fields: [createdById], references: [id])
+  createdById  Int
+  isOnline     Boolean    @default(false)
+  meetingId    String?    @unique
+  eventId      String     @unique @default(uuid())
+  eventPin     String?    @default("null")
+  meetingStarted Boolean @default(false)
+  participants User[]     @relation("EventParticipant")
+  attendees    EventAttendee[]
+  certificates Certificate[]
+  participantCount Int     @default(0) @map("participant_count")
+  status       EventStatus @default(SCHEDULED)
+  certificateTemplateId Int? @map("certificate_template_id")
+  @@map("events")
+}
+
+enum EventStatus {
+  SCHEDULED
+  ACTIVE
+  ENDED
+}
+
+
+model Notification {
+  id           Int             @id @default(autoincrement())
+  userId       Int             // Foreign key to User
+  user         User            @relation(fields: [userId], references: [id])
+  type         NotificationType
+  message      String
+  read         Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+}
+
+model Activity {
+  id           Int             @id @default(autoincrement())
+  userId       Int             // Foreign key to User
+  user         User            @relation(fields: [userId], references: [id])
+  description  String
+  type         ActivityType
+  createdAt    DateTime        @default(now())
+}
+
+model EventAnalytics {
+  id             Int      @id @default(autoincrement())
+  eventId        String   @unique
+  event          Event    @relation(fields: [eventId], references: [eventId])
+  totalJoined    Int      @default(0)
+  peakParticipants Int    @default(0)
+  averageDuration  Float  @default(0)
+  joinRate         Float  @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+enum NotificationType {
+  EVENT_JOINED
+  EVENT_CREATED
+  NEW_MESSAGE
+  CERTIFICATE_AVAILABLE
+
+  OTHER
+}
+
+enum ActivityType {
+  EVENT_CREATION
+  EVENT_EDIT
+  EVENT_DELETION
+  EVENT_JOINED
+  OTHER
+  
+}
+
+model Certificate {
+  id          Int      @id @default(autoincrement())
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [eventId])
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  downloadUrl String
+  isPaid      Boolean  @default(false)
+  price       Decimal? @db.Decimal(10,2)
+  createdAt   DateTime @default(now())
+}
+
+model EventAttendee {
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [eventId])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  joinedAt  DateTime @default(now())
+  leftAt    DateTime?
+  totalDuration Int  @default(0) // Total duration in milliseconds
+
+  @@unique([eventId, userId])
+}
