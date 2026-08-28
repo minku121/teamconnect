@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/lib/auth"
 import prisma from "@/app/lib/prisma"
 import { invalidateNotificationCache } from "@/app/lib/notificationCache"
-
+import { addEmailJob } from "@/app/lib/queue"
 /**
  * API Route: POST /api/certificates/send
  * Sends certificates to event attendees
@@ -258,6 +258,15 @@ export async function POST(request: NextRequest) {
             // Invalidate Cache
             await invalidateNotificationCache(attendee.userId)
 
+            // Send email
+            await addEmailJob({
+              type: "CERTIFICATE",
+              email: attendee.email,
+              name: attendee.name,
+              eventName: event.name,
+              certificateLink: existingCertificate.downloadUrl
+            })
+
             results.updated++
             results.details.push({
               userId: attendee.userId,
@@ -302,6 +311,15 @@ export async function POST(request: NextRequest) {
 
           // Invalidate Cache
           await invalidateNotificationCache(attendee.userId)
+
+          // Send email
+          await addEmailJob({
+            type: "CERTIFICATE",
+            email: attendee.email,
+            name: attendee.name,
+            eventName: event.name,
+            certificateLink: certificate.downloadUrl
+          })
 
           results.created++
           results.details.push({
