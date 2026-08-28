@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import prisma from '@/app/lib/prisma';
 import { authOptions } from '@/app/lib/auth';
 import { redis } from '@/app/lib/redis';
+import { addEmailJob } from '@/app/lib/queue';
 
 export async function POST(req: Request) {
   try {
@@ -89,6 +90,17 @@ export async function POST(req: Request) {
 
     // Invalidate the user's event cache
     await redis.del(`events:mine:${session.user.id}`);
+    
+    // Queue Event Created Email
+    if (session.user.email) {
+      await addEmailJob({
+        type: "EVENT_CREATED",
+        email: session.user.email,
+        name: session.user.name || 'User',
+        eventName: event.name,
+        eventDate: event.startTime.toLocaleString(),
+      });
+    }
     
     return NextResponse.json({ message: 'Event created successfully', event }, { status: 201 });
 

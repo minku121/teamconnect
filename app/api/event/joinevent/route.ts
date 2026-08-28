@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import prisma from "@/app/lib/prisma";
+import { invalidateNotificationCache } from "@/app/lib/notificationCache";
+import { addEmailJob } from "@/app/lib/queue";
 
 export async function POST(request: NextRequest) {
     const body = await request.json();
@@ -105,6 +107,9 @@ export async function POST(request: NextRequest) {
                 message: `You've joined event: ${event.name}`
             }
         });
+        
+        // Invalidate Cache
+        await invalidateNotificationCache(session.user.id)
 
         await prisma.activity.create({
             data: {
@@ -113,6 +118,31 @@ export async function POST(request: NextRequest) {
                 description: `Joined event: ${event.name}`
             }
         });
+        
+        // Queue Emails
+        if (session.user.email) {
+            // Joined email
+            await addEmailJob({
+                type: "EVENT_JOINED",
+                email: session.user.email,
+                name: session.user.name || 'User',
+                eventName: event.name,
+                eventDate: event.startTime.toLocaleString()
+            });
+
+            // Reminder email (2 minutes before)
+            const twoMinsBefore = new Date(event.startTime.getTime() - 2 * 60 * 1000);
+            const delayMs = twoMinsBefore.getTime() - Date.now();
+            if (delayMs > 0) {
+                await addEmailJob({
+                    type: "EVENT_REMINDER",
+                    email: session.user.email,
+                    name: session.user.name || 'User',
+                    eventName: event.name,
+                    eventLink: `/events/${event.eventId}` // Standard link format
+                }, delayMs);
+            }
+        }
 
         return NextResponse.json(
             { success: true, event: updatedEvent, user: updatedUser },

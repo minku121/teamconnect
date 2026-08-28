@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/lib/auth"
 import prisma from "@/app/lib/prisma"
+import { invalidateNotificationCache } from "@/app/lib/notificationCache"
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,6 +35,9 @@ export async function POST(request: NextRequest) {
       where: { id },
       data: { read: true },
     })
+    
+    // Invalidate Cache
+    await invalidateNotificationCache(session.user.id)
 
     return NextResponse.json({ success: true })
   } catch (error) {

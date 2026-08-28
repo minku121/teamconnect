@@ -2,6 +2,7 @@ import { authOptions } from "@/app/lib/auth";
 import { getServerSession } from "next-auth";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { invalidateMultipleUsersCache } from "@/app/lib/notificationCache";
 
 const prisma = new PrismaClient()
 export async function POST(req: Request) {
@@ -57,6 +58,10 @@ export async function POST(req: Request) {
           read: false
         }))
       });
+      
+      // Invalidate Cache for all participants
+      const userIds = participants.map(p => p.id);
+      await invalidateMultipleUsersCache(userIds);
 
       // Update attendance records for all participants who were still in the meeting
       await prisma.eventAttendee.updateMany({
