@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowRight, Calendar, Flag, Users, PenToolIcon as Tool } from "lucide-react"
 import { getServerSession } from "next-auth"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import { authOptions } from "@/app/lib/auth"
 import prisma from "@/app/lib/prisma"
 
 import { Button } from "@/components/ui/button"
