@@ -88,8 +88,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 })
     }
 
-    `)
-
     if (event.createdById !== Number(session.user.id)) {
       
       return NextResponse.json({
@@ -165,8 +163,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "No valid user IDs provided" }, { status: 400 })
       }
 
-      }`)
-
       // Find specified attendees who are registered for this event
       const attendees = await prisma.eventAttendee.findMany({
         where: {
@@ -225,8 +221,6 @@ export async function POST(request: NextRequest) {
 
     for (const attendee of eligibleAttendees) {
       try {
-        `)
-
         // Check if certificate exists first
         const existingCertificate = await prisma.certificate.findFirst({
           where: {
