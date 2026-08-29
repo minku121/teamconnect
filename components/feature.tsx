@@ -16,10 +16,10 @@ import {
   const features = [
     {
       Icon: Users,
-      name: "Team Collaboration",
-      description: "Create and join teams to work on projects together. Share resources, track progress, and achieve goals as a team.",
-      href: "/teams",
-      cta: "Join Teams",
+      name: "Create Events",
+      description: "Schedule, manage, and promote your events seamlessly.",
+      href: "/events",
+      cta: "Host an Event",
       color: 'purple',
       background: (
         <svg
@@ -36,10 +36,10 @@ import {
     },
     {
       Icon: Code2,
-      name: "Project Management",
-      description: "Organize your development workflow with integrated project management tools and version control.",
-      href: "/projects",
-      cta: "Start Project",
+      name: "Live Broadcasting",
+      description: "Stream video to hundreds of attendees with ultra-low latency.",
+      href: "/stream",
+      cta: "Start Streaming",
       color: 'violet',
       background: (
         <svg
@@ -56,10 +56,10 @@ import {
     },
     {
       Icon: GitBranch,
-      name: "Code Collaboration",
-      description: "Seamlessly collaborate on code with integrated Git features, code reviews, and real-time pair programming.",
-      href: "/code",
-      cta: "Start Coding",
+      name: "Audience Engagement",
+      description: "Keep your audience engaged with real-time chat and interactions.",
+      href: "/chat",
+      cta: "Start Chatting",
       color: 'blue',
       background: (
         <svg
@@ -86,10 +86,10 @@ import {
     },
     {
       Icon: Lightbulb,
-      name: "Learning Hub",
-      description: "Access curated resources, tutorials, and documentation to enhance your development skills.",
-      href: "/learn",
-      cta: "Start Learning",
+      name: "Automatic Certificates",
+      description: "Issue customizable certificates to attendees instantly after the event concludes.",
+      href: "/certificates",
+      cta: "Issue Certificates",
       color: 'amber',
       background: (
         <svg
@@ -106,10 +106,10 @@ import {
     },
     {
       Icon: Rocket,
-      name: "Hackathons",
-      description: "Participate in exciting hackathons, showcase your skills, and win amazing prizes.",
-      href: "/hackathons",
-      cta: "Join Hackathon",
+      name: "Secure Access",
+      description: "Protect your streams with built-in authentication and role-based access.",
+      href: "/security",
+      cta: "View Security",
       color: 'emerald',
       background: (
         <svg
@@ -126,10 +126,10 @@ import {
     },
     {
       Icon: Sparkles,
-      name: "Community Events",
-      description: "Join workshops, meetups, and networking events to connect with fellow developers.",
-      href: "/events",
-      cta: "View Events",
+      name: "Email Reminders",
+      description: "Keep attendees in the loop with automated email reminders and updates.",
+      href: "/emails",
+      cta: "Setup Reminders",
       color: 'rose',
       background: (
         <svg

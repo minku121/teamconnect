@@ -27,8 +27,6 @@ const transporter = nodemailer.createTransport({
 
 async function sendEmail(to: string, subject: string, html: string) {
   if (!gmailUser || !gmailPass) {
-    console.warn("⚠️ GMAIL_USER or GMAIL_APP_PASSWORD not set. Logging email instead:");
-    console.log(`To: ${to}\nSubject: ${subject}\nBody: ${html}`);
     return;
   }
   try {
@@ -38,10 +36,8 @@ async function sendEmail(to: string, subject: string, html: string) {
       subject,
       html,
     });
-    console.log(`✅ Email sent to ${to}: ${info.messageId}`);
     return info;
   } catch (error) {
-    console.error(`❌ Error sending email to ${to}:`, error);
     throw error;
   }
 }
@@ -83,13 +79,11 @@ export type EmailJobData =
   | EventReminderEmailData;
 
 // 4. Worker Setup
-console.log("👷 Starting standalone BullMQ Worker for EventConnect...");
 
 const worker = new Worker<EmailJobData>(
   "emailQueue",
   async (job) => {
     const data = job.data;
-    console.log(`⏳ Processing job ${job.id} of type ${data.type}`);
 
     try {
       const nextAuthUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
@@ -136,11 +130,8 @@ const worker = new Worker<EmailJobData>(
           break;
 
         default:
-          console.warn(`Unknown job type received: ${(data as any).type}`);
       }
-      console.log(`✅ Job ${job.id} processed successfully`);
     } catch (error) {
-      console.error(`❌ Job ${job.id} failed:`, error);
       throw error;
     }
   },
@@ -150,18 +141,15 @@ const worker = new Worker<EmailJobData>(
 );
 
 worker.on("error", (err) => {
-  console.error("Worker error:", err);
 });
 
 // Handle graceful shutdown
 process.on("SIGTERM", async () => {
-  console.log("Shutting down worker...");
   await worker.close();
   process.exit(0);
 });
 
 process.on("SIGINT", async () => {
-  console.log("Shutting down worker...");
   await worker.close();
   process.exit(0);
 });

@@ -1,38 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-const recentJoinedEvents = [
-  {
-    name: "Tech Conference 2023",
-    organizer: "TechCorp",
-    date: "2023-09-15",
-  },
-  {
-    name: "AI Workshop",
-    organizer: "AI Innovations",
-    date: "2023-09-20",
-  },
-  {
-    name: "Blockchain Meetup",
-    organizer: "Crypto Enthusiasts",
-    date: "2023-09-25",
-  },
-]
-
-const recentCreatedEvents = [
-  {
-    name: "Startup Networking Event",
-    maxParticipantss: 50,
-    date: "2023-10-05",
-  },
-  {
-    name: "Cybersecurity Seminar",
-    maxParticipantss: 75,
-    date: "2023-10-10",
-  },
-]
-
-export function RecentEvents({ type }: { type: "joined" | "created" }) {
-  const events = type === "joined" ? recentJoinedEvents : recentCreatedEvents
+export function RecentEvents({ type, events = [] }: { type: "joined" | "created", events?: any[] }) {
+  if (!events || events.length === 0) {
+    return <p className="text-sm text-muted-foreground">No recent events found.</p>;
+  }
 
   return (
     <div className="space-y-8">
@@ -46,9 +17,9 @@ export function RecentEvents({ type }: { type: "joined" | "created" }) {
             <p className="text-sm font-medium leading-none">{event.name}</p>
             <p className="text-sm text-muted-foreground">
               {type === "joined" ? (
-                `Organized by ${(event as { name: string; organizer: string; date: string }).organizer}`
+                `Organized by ${event.organizer}`
               ) : (
-                `${(event as { name: string; maxParticipantss: number; date: string }).maxParticipantss} maxParticipantss`
+                `${event.maxParticipants || 0} Participants`
               )}
             </p>
           </div>

@@ -16,27 +16,27 @@ const featureVariants = {
 
 export function FeaturesSection() {
   const features = [
-    { icon: Users, title: "Team Creation", description: "Create your dream team in minutes. Set roles, requirements, and goals.", color: "text-blue-500" },
-    { icon: Rocket, title: "Smart Matching", description: "AI-powered team matching based on skills, experience, and compatibility.", color: "text-purple-500" },
-    { icon: MessageSquare, title: "Real-time Chat", description: "Built-in messaging system for seamless team communication.", color: "text-green-500" },
-    { icon: Target, title: "Goal Tracking", description: "Set and track team goals, milestones, and progress in real-time.", color: "text-red-500" },
-    { icon: Shield, title: "Privacy Control", description: "Advanced privacy settings and member management controls.", color: "text-yellow-500" },
-    { icon: Zap, title: "Quick Join", description: "Join teams instantly with our streamlined application process.", color: "text-orange-500" },
+    { icon: Users, title: "Event Creation", description: "Create and schedule events in minutes. Set details, dates, and cover images.", color: "text-blue-500" },
+    { icon: Rocket, title: "Live Streaming", description: "High-quality, low-latency live streaming to reach your audience anywhere.", color: "text-purple-500" },
+    { icon: MessageSquare, title: "Interactive Chat", description: "Built-in messaging system for engaging with your attendees in real-time.", color: "text-green-500" },
+    { icon: Target, title: "Instant Certificates", description: "Automatically issue digital certificates to users who attend your sessions.", color: "text-red-500" },
+    { icon: Shield, title: "Host Controls", description: "Advanced stream controls, moderation, and attendee management.", color: "text-yellow-500" },
+    { icon: Zap, title: "One-Click Join", description: "Attendees can join your events instantly with our streamlined process.", color: "text-orange-500" },
   ]
 
   return (
     <section id="features" className="container py-24 sm:py-32 max-w-[95%] mx-auto">
       <motion.div 
-        initial={{ opacity: 0, y: -20 , scale: 0.9 , x:-50}}
-        whileInView={{ opacity: 1, y: 0 , scale: 1 , x:0}}
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="text-center mb-12"
       >
         <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-          Powerful Features for Seamless Collaboration
+          Everything you need to host great events
         </h2>
         <p className="mt-4 text-muted-foreground">
-          Discover the tools that make TeamConnect the ultimate platform for team building and management.
+          We handle the logistics so you can focus on delivering a great experience.
         </p>
       </motion.div>
       <motion.div initial={{opacity:0,y:-20}} whileInView={{opacity:1,y:0}} transition={{duration:0.3}} className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">

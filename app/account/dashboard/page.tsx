@@ -1,6 +1,5 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Overview } from "@/components/dashboard/overview"
 import { RecentActivity } from "@/components/dashboard/recent-activity"
 import { RecentEvents } from "@/components/dashboard/recent-events"
@@ -13,184 +12,123 @@ export default function DashboardPage() {
     activity: string
     time: string
   }>>([])
+  
+  const [stats, setStats] = useState({
+    totalEvents: 0,
+    activeUsers: 0,
+    eventsToday: 0,
+    activeNow: 0,
+    recentCreated: [],
+    recentJoined: []
+  })
+
+  const [overviewData, setOverviewData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchActivities = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const response = await fetch('/api/activities/recent')
-        const data = await response.json()
-        setActivities(data)
+        const [activitiesRes, statsRes, overviewRes] = await Promise.all([
+          fetch('/api/activities/recent'),
+          fetch('/api/analytics/dashboard-stats'),
+          fetch('/api/analytics/overview')
+        ])
+        
+        if (activitiesRes.ok) {
+          const data = await activitiesRes.json()
+          setActivities(data)
+        }
+        
+        if (statsRes.ok) {
+          const statsData = await statsRes.json()
+          setStats(statsData)
+        }
+
+        if (overviewRes.ok) {
+          const overview = await overviewRes.json()
+          setOverviewData(overview)
+        }
       } catch (error) {
-        console.error('Error fetching activities:', error)
+        console.error('Error fetching dashboard data:', error)
       } finally {
         setLoading(false)
       }
     }
-    fetchActivities()
+    fetchDashboardData()
   }, [])
 
   return (
-    <div className="flex h-screen">
+    <div className="container mx-auto p-6 md:p-12 space-y-12">
+      <div className="flex items-center justify-between pb-4 border-b">
+        <h2 className="text-3xl font-light tracking-tight">Dashboard</h2>
+      </div>
 
-   
-      
+      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="flex flex-col gap-2 p-6 rounded-2xl bg-muted/20 border border-muted/50 hover:bg-muted/40 transition-colors">
+          <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Total Events</span>
+          <span className="text-5xl font-light tracking-tighter">{loading ? '-' : stats.totalEvents}</span>
+        </div>
+        <div className="flex flex-col gap-2 p-6 rounded-2xl bg-muted/20 border border-muted/50 hover:bg-muted/40 transition-colors">
+          <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Participants</span>
+          <span className="text-5xl font-light tracking-tighter">{loading ? '-' : stats.activeUsers}</span>
+        </div>
+        <div className="flex flex-col gap-2 p-6 rounded-2xl bg-muted/20 border border-muted/50 hover:bg-muted/40 transition-colors">
+          <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Events Today</span>
+          <span className="text-5xl font-light tracking-tighter">{loading ? '-' : stats.eventsToday}</span>
+        </div>
+        <div className="flex flex-col gap-2 p-6 rounded-2xl bg-muted/20 border border-muted/50 hover:bg-muted/40 transition-colors">
+          <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Active Now</span>
+          <span className="text-5xl font-light tracking-tighter">{loading ? '-' : stats.activeNow}</span>
+        </div>
+      </div>
 
-
-        <div className="flex-1 space-y-4 p-8 pt-6">
-          <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+      <div className="grid gap-12 lg:grid-cols-3 items-start">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-medium tracking-tight">Activity Overview</h3>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Events
-                </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">45</div>
-                <p className="text-xs text-muted-foreground">
-                  +20.1% from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Active Users
-                </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+2350</div>
-                <p className="text-xs text-muted-foreground">
-                  +180.1% from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Events Today</CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <rect width="20" height="14" x="2" y="5" rx="2" />
-                  <path d="M2 10h20" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+12</div>
-                <p className="text-xs text-muted-foreground">
-                  +19% from last week
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Active Now
-                </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+573</div>
-                <p className="text-xs text-muted-foreground">
-                  +201 since last hour
-                </p>
-              </CardContent>
-            </Card>
+          <div className="h-[300px] w-full rounded-2xl border border-muted/50 bg-muted/10 p-4">
+            <Overview data={overviewData} />
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Overview</CardTitle>
-              </CardHeader>
-              <CardContent className="pl-2">
-                <Overview />
-              </CardContent>
-            </Card>
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>
-                  {loading ? 'Loading...' : `You have ${activities.length} new activities`}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RecentActivity activities={activities} loading={loading} />
-              </CardContent>
-            </Card>
+        </div>
+        
+        <div className="lg:col-span-1 space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-medium tracking-tight">Recent Log</h3>
+            <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded-full">
+              {loading ? '...' : `${activities.length} new`}
+            </span>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Recently Joined Events</CardTitle>
-                <CardDescription>
-                  You've joined 3 new events this week.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RecentEvents type="joined" />
-              </CardContent>
-            </Card>
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Recently Created Events</CardTitle>
-                <CardDescription>
-                  You've created 2 new events this week.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RecentEvents type="created" />
-              </CardContent>
-            </Card>
+          <div className="rounded-2xl border border-muted/50 bg-muted/10 p-6">
+            <RecentActivity activities={activities} loading={loading} />
           </div>
         </div>
       </div>
-    
+
+      <div className="grid gap-12 lg:grid-cols-2 pt-6 border-t">
+        <div className="space-y-6">
+          <h3 className="text-xl font-medium tracking-tight">Recently Joined Events</h3>
+          <div className="rounded-2xl border border-muted/50 bg-muted/10 p-6 min-h-[200px]">
+            {loading ? (
+              <p className="text-sm text-muted-foreground">Loading events...</p>
+            ) : (
+              <RecentEvents type="joined" events={stats.recentJoined} />
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <h3 className="text-xl font-medium tracking-tight">Recently Created Events</h3>
+          <div className="rounded-2xl border border-muted/50 bg-muted/10 p-6 min-h-[200px]">
+            {loading ? (
+              <p className="text-sm text-muted-foreground">Loading events...</p>
+            ) : (
+              <RecentEvents type="created" events={stats.recentCreated} />
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
+

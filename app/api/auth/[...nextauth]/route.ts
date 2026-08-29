@@ -4,7 +4,7 @@ import { authOptions } from "@/app/lib/auth";
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      id: number; 
+      id: number;
       name?: string | null;
       email?: string | null;
       image?: string | null;
@@ -32,3 +32,5 @@ const authHandler = NextAuth(authOptions);
 
 export const GET = authHandler;
 export const POST = authHandler;
+
+export { authOptions };

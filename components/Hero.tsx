@@ -22,7 +22,7 @@ const Hero = () => {
          
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
               className="flex items-center gap-2 px-4 py-1 text-sm text-muted-foreground border border-blue-600 rounded-full"
             >
@@ -30,23 +30,22 @@ const Hero = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-100"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
-              Now with AI-powered team matching
+              Live streaming & instant certificates
             </motion.div>
          
         </div>
 
-        <motion.h1 initial={{opacity:0,y:-20}} whileInView={{opacity:1,y:0}} transition={{duration:0.5}} className="mt-6 max-w-4xl text-4xl font-medium tracking-tight sm:text-5xl md:text-7xl">
-          Join events, teams, and
+        <motion.h1 initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} transition={{duration:0.5}} className="mt-6 max-w-4xl text-4xl font-medium tracking-tight sm:text-5xl md:text-7xl">
+          Host and attend live
           <br />
-          challenges seamlessly.
+          events seamlessly.
         </motion.h1>
 
-        <motion.p initial={{opacity:0,y:-20}} whileInView={{opacity:1,y:0}} transition={{duration:0.7}} className="mt-6 max-w-2xl text-base sm:text-lg text-gray-400">
-          TeamConnect is your gateway to a world of collaborative opportunities.
-          Discover events, join teams, and participate in exciting online challenges.
+        <motion.p initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} transition={{duration:0.7}} className="mt-6 max-w-2xl text-base sm:text-lg text-gray-400">
+          A simple, powerful platform for hosting virtual events, engaging your audience, and issuing certificates instantly after the session.
         </motion.p>
 
-        <motion.div initial={{y:-20,opacity:0}} whileInView={{y:0,opacity:1}} transition={{duration:0.85}}>
+        <motion.div initial={{y:-20,opacity:0}} animate={{y:0,opacity:1}} transition={{duration:0.85}}>
         <Button className="mt-8" size="lg" asChild>
           <Link href="/auth/signin">Get Started For Free  → </Link>
         </Button>
@@ -54,8 +53,8 @@ const Hero = () => {
       </div>
 
       {/* Image Container */}
-      <motion.div  initial={{ opacity: 0, y: -20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="relative rounded-lg border border-gray-800 bg-gray-900/50  backdrop-blur-sm  mt-10">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-[#8880ff] to-[#3916e8] opacity-50 blur-[150px] rounded-lg"></div>
+      <motion.div  initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="relative rounded-lg border border-gray-800 bg-gray-900/50  backdrop-blur-sm  mt-10">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-[#8880ff] to-[#3916e8] opacity-30 blur-3xl rounded-lg"></div>
         <Image
           src="https://res.cloudinary.com/dgjcyqrih/image/upload/v1737002095/Rectangle_2_zk9i2m.svg"
           width={1200}

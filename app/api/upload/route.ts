@@ -10,10 +10,8 @@ cloudinary.config({
 
 export async function POST(req: Request) {
   try {
-    console.log("=== API /upload HIT ===");
     const formData = await req.formData();
     const file = formData.get("file") as File;
-    console.log("FormData parsed, file found:", file ? file.name : "null");
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -21,21 +19,17 @@ export async function POST(req: Request) {
 
 
     const bytes = await file.arrayBuffer();
-    console.log("ArrayBuffer extracted, size:", bytes.byteLength);
     const buffer = Buffer.from(bytes);
     const base64Data = buffer.toString('base64');
     const dataUri = `data:${file.type};base64,${base64Data}`;
 
-    console.log("Uploading to Cloudinary...");
     const uploadResult = await cloudinary.uploader.upload(dataUri, {
       folder: "teamconnect",
       resource_type: "auto",
     });
-    console.log("Cloudinary upload successful, secure_url:", (uploadResult as any).secure_url);
 
     return NextResponse.json({ url: (uploadResult as any).secure_url }, { status: 200 });
   } catch (error) {
-    console.error("Upload error caught:", error);
     return NextResponse.json({ error: String(error) }, { status: 500 });
   }
 }

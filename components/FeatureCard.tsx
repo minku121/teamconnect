@@ -21,7 +21,7 @@ export default function FeatureCard() {
           startOnView={true} 
           className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-500"
         >
-          Powerful Features
+          Built for Hosts and Attendees
         </TextAnimate>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -30,7 +30,7 @@ export default function FeatureCard() {
           viewport={{ once: true }}
           className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto"
         >
-          Everything you need to collaborate, learn, and grow as a developer
+          Everything you need for seamless virtual events.
         </motion.p>
       </motion.div>
 
