@@ -1,3 +1,4 @@
+"use client"
 import { Navbar } from "@/components/Navbar"
 import { TextAnimate } from "@/components/ui/text-animate"
 import { motion } from "framer-motion"
