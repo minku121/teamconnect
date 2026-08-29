@@ -7,16 +7,16 @@ import { addEmailJob } from '@/app/lib/queue';
 
 export async function POST(req: Request) {
   try {
-    // Get the session to verify authentication
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Parse the incoming request body
+
     const body = await req.json();
 
-    // Check for required fields
+
     const { name, description, location, eventDateTime, image, ispublic, islimited, maxParticipants, isOnline, eventPin } = body;
 
     if (!name || !description || !eventDateTime) {
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
       data: { eventsCreated: { increment: 1 } },
     });
 
-  
+
     await prisma.activity.create({
       data: {
         userId: session.user.id,
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
 
     // Invalidate the user's event cache
     await redis.del(`events:mine:${session.user.id}`);
-    
+
     // Queue Event Created Email
     if (session.user.email) {
       await addEmailJob({
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
         eventDate: event.startTime.toLocaleString(),
       });
     }
-    
+
     return NextResponse.json({ message: 'Event created successfully', event }, { status: 201 });
 
   } catch (error) {

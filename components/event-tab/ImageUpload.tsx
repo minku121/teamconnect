@@ -12,8 +12,8 @@ interface ImageUploadProps {
   onError?: (error: string) => void
 }
 
-export default function ImageUpload({ 
-  onImageUpload, 
+export default function ImageUpload({
+  onImageUpload,
   onUploadStart,
   onUploadEnd,
   onProgress,
@@ -31,9 +31,11 @@ export default function ImageUpload({
         setIsUploading(true)
         onUploadStart()
         onProgress(0)
-        
+
         const formData = new FormData()
         formData.append('file', file)
+
+
 
         const xhr = new XMLHttpRequest()
         xhr.upload.addEventListener('progress', (event) => {
@@ -48,7 +50,9 @@ export default function ImageUpload({
         xhr.responseType = 'json'
 
         xhr.onload = () => {
+
           if (xhr.status === 200) {
+
             const result = xhr.response
             onImageUpload(result.url)
             setPreviewUrl(result.url)
@@ -63,11 +67,12 @@ export default function ImageUpload({
 
         xhr.onerror = () => {
           const error = 'Network error during upload'
-          console.error('Upload error:', error)
+          console.error('ImageUpload: XHR network error:', error, xhr.status, xhr.statusText);
           onError?.(error)
           setIsUploading(false)
           onUploadEnd()
         }
+
 
         xhr.send(formData)
 
@@ -98,8 +103,8 @@ export default function ImageUpload({
         ref={fileInputRef}
         disabled={isUploading}
       />
-      <Button 
-        type="button" 
+      <Button
+        type="button"
         onClick={handleButtonClick}
         className="w-full relative"
         disabled={isUploading}

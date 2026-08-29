@@ -8,6 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Users, Ticket } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PersonIcon } from "@radix-ui/react-icons";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 
 interface Event {
@@ -41,6 +50,11 @@ export default function Page() {
   const [loadedPages, setLoadedPages] = useState<Set<number>>(new Set());
   const [retryCount, setRetryCount] = useState(0);
   const [joiningEventId, setJoiningEventId] = useState<string | null>(null);
+  
+  const [privateEventId, setPrivateEventId] = useState("");
+  const [privateEventPin, setPrivateEventPin] = useState("");
+  const [isJoiningPrivate, setIsJoiningPrivate] = useState(false);
+  const [isJoinPrivateOpen, setIsJoinPrivateOpen] = useState(false);
 
   const { toast } = useToast();
 
@@ -106,6 +120,56 @@ export default function Page() {
   const handlePreviousPage = () => {
     if (page > 1) {
       setPage(prev => prev - 1);
+    }
+  };
+
+  const handleJoinPrivateEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!privateEventId || !privateEventPin) {
+      toast({
+        title: "Error",
+        description: "Event ID and PIN are required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsJoiningPrivate(true);
+    try {
+      const response = await fetch("/api/event/joinevent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventId: privateEventId,
+          pin: privateEventPin,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to join event");
+      }
+
+      toast({
+        title: "Success",
+        description: "Successfully joined the private event!",
+        variant: "default",
+      });
+      
+      setPrivateEventId("");
+      setPrivateEventPin("");
+      setIsJoinPrivateOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "An error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsJoiningPrivate(false);
     }
   };
 
@@ -192,9 +256,52 @@ export default function Page() {
           colors={{ first: "#29cb15", second: "#fff000" }}
           sparklesCount={7}
         />
-        <h2 className="text-center text-blue-900 text-1xl dark:text-[#4d4d4d]">
+        <h2 className="text-center text-blue-900 text-1xl dark:text-[#4d4d4d] mb-6">
           (These Are Mixed Events)
         </h2>
+
+        {/* Join Private Event Section */}
+        <div className="flex justify-center mb-8">
+          <Dialog open={isJoinPrivateOpen} onOpenChange={setIsJoinPrivateOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="text-lg px-8 py-6 rounded-full border-2 border-primary hover:bg-primary/10">
+                <Ticket className="w-6 h-6 mr-2" />
+                Join Private Event with Code
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Join Private Event</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleJoinPrivateEvent} className="space-y-4 pt-4">
+                <div>
+                  <Label htmlFor="privateEventId">Event ID (Meet Code)</Label>
+                  <Input 
+                    id="privateEventId" 
+                    value={privateEventId}
+                    onChange={(e) => setPrivateEventId(e.target.value)}
+                    placeholder="Enter Event ID"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="privateEventPin">PIN</Label>
+                  <Input 
+                    id="privateEventPin" 
+                    type="password"
+                    value={privateEventPin}
+                    onChange={(e) => setPrivateEventPin(e.target.value)}
+                    placeholder="Enter Event PIN"
+                    required
+                  />
+                </div>
+                <Button type="submit" disabled={isJoiningPrivate} className="w-full mt-4">
+                  {isJoiningPrivate ? "Joining..." : "Join Event"}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
 
         {isLoadingMore && <SkeletonLoader />}
 
@@ -256,7 +363,7 @@ export default function Page() {
                             <div className="flex items-center gap-2">
                               <Ticket className="w-4 h-4" />
                               {event.maxParticipants ? 
-                                `${event.maxParticipants - event.participantCount} seats left` : 
+                                event.participantCount >= event.maxParticipants ? "Already max participants" : `${event.maxParticipants - event.participantCount} seats left` : 
                                 "Unlimited"}
                             </div>
                           </div>
@@ -266,7 +373,7 @@ export default function Page() {
                         className="w-full mt-4" 
                         onClick={() => handleJoinEvent(event)}
                         disabled={joiningEventId === event.eventId || 
-                                 (event.participantCount === event.maxParticipants) ||
+                                 (event.maxParticipants !== undefined && event.maxParticipants !== null && event.participantCount >= event.maxParticipants) ||
                                  (event.createdBy.id === session?.user.id)}
                       >
                         {joiningEventId === event.eventId ? (
@@ -277,6 +384,8 @@ export default function Page() {
                             </svg>
                             Joining...
                           </div>
+                        ) : (event.maxParticipants !== undefined && event.maxParticipants !== null && event.participantCount >= event.maxParticipants) ? (
+                          "Already Max Participants"
                         ) : (
                           "Join Now"
                         )}

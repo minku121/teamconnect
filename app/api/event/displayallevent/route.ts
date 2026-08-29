@@ -22,6 +22,7 @@ export async function GET(request: Request) {
         take: pageSize,
         where: {
           status: "SCHEDULED",
+          ispublic: true,
         },
         select: {
           id: true,
@@ -47,7 +48,8 @@ export async function GET(request: Request) {
       }),
       prisma.event.count({ 
         where: { 
-          status: "SCHEDULED", 
+          status: "SCHEDULED",
+          ispublic: true,
         } 
       })
     ]);

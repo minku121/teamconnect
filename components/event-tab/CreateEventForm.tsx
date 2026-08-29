@@ -23,12 +23,10 @@ export default function CreateEventForm({ onClose }: CreateEventFormProps) {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [image, setImage] = useState("");
-  const [location, setLocation] = useState("");
+  const [error, setError] = useState("");
   const [date, setDate] = useState("");
   const [maxParticipants, setMaxParticipants] = useState(1);
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isOnline, setIsOnline] = useState(false);
   const [eventPin, setEventPin] = useState("");
   const [isImageUploading, setIsImageUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -46,13 +44,13 @@ export default function CreateEventForm({ onClose }: CreateEventFormProps) {
     const eventData = {
       name,
       description: desc,
-      location,
+      location: "Online",
       eventDateTime: new Date(date).toISOString(),
       image: image || "",
       ispublic: isPublic,
       islimited: limitedParticipants,
       maxParticipants: limitedParticipants ? maxParticipants : null,
-      isOnline,
+      isOnline: true,
       eventPin: isPublic ? null : eventPin
     };
     
@@ -177,26 +175,6 @@ export default function CreateEventForm({ onClose }: CreateEventFormProps) {
         )}
       </div>
 
-      <div className="flex items-center space-x-2">
-        <Switch 
-          id="isOnline" 
-          checked={isOnline} 
-          onCheckedChange={() => setIsOnline(!isOnline)} 
-        />
-        <Label htmlFor="isOnline">Online Event</Label>
-      </div>
-
-      {!isOnline && (
-        <div>
-          <Label htmlFor="location">Location</Label>
-          <Input 
-            id="location" 
-            value={location} 
-            onChange={(e) => setLocation(e.target.value)} 
-            required 
-          />
-        </div>
-      )}
 
       <div>
         <Label htmlFor="dateTime">Date and Time</Label>

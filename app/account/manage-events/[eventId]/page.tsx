@@ -15,6 +15,7 @@ import {
   ArrowUpRight,
   BarChart4,
   Video,
+  Copy,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -30,6 +31,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+
+
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { getEventInfo } from "@/app/actions/eventInfo"
@@ -37,7 +40,9 @@ import { use, useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { EditEventDialog } from "@/components/event-tab/EditEventDialog"
-import { useSession} from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@radix-ui/react-dialog"
+import { DialogHeader } from "@/components/ui/dialog"
 
 const animationStyles = {
   "@keyframes pulseSlow": {
@@ -70,7 +75,7 @@ export default function EventDetailPage({
     const fetchEvent = async () => {
       try {
         const data = await getEventInfo(eventId, session?.user.id || 0);
-        
+
         if ('error' in data) {
           throw new Error(data.error);
         }
@@ -88,7 +93,7 @@ export default function EventDetailPage({
           return;
         }
 
-      
+
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Failed to fetch event";
         setError(errorMessage);
@@ -117,7 +122,7 @@ export default function EventDetailPage({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           id: event.id,
           confirmDeletion
         }),
@@ -343,7 +348,7 @@ export default function EventDetailPage({
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
         onSave={(updatedEvent: any) => {
-          setEvent((prev: any) => ({ 
+          setEvent((prev: any) => ({
             ...updatedEvent,
             createdBy: prev.createdBy
           }));
@@ -378,7 +383,7 @@ export default function EventDetailPage({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               className="bg-destructive text-destructive-foreground"
               onClick={() => handleDeleteEvent(true)}
             >
@@ -413,6 +418,38 @@ export default function EventDetailPage({
 
         <p className="text-muted-foreground leading-relaxed">{event.description}</p>
 
+        <div className="flex flex-col sm:flex-row items-center gap-6 my-4 bg-muted/30 p-4 rounded-lg border">
+          <div className="flex flex-col">
+            <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">Event Code</span>
+            <code className="text-xl font-mono font-bold text-primary">{eventId}</code>
+          </div>
+
+          {!event.ispublic && event.eventPin && (
+            <>
+              <div className="hidden sm:block w-px h-12 bg-border"></div>
+              <div className="flex flex-col">
+                <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">Event PIN</span>
+                <code className="text-xl font-mono font-bold text-primary">{event.eventPin}</code>
+              </div>
+            </>
+          )}
+
+          <div className="hidden sm:block w-px h-12 bg-border ml-auto"></div>
+
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            onClick={() => {
+              const textToCopy = `Event Code: ${eventId}${!event.ispublic && event.eventPin ? `\nEvent PIN: ${event.eventPin}` : ''}`;
+              navigator.clipboard.writeText(textToCopy);
+              toast({ title: "Copied!", description: "Event details copied to clipboard." });
+            }}
+          >
+            <Copy className="mr-2 h-4 w-4" />
+            Copy Details
+          </Button>
+        </div>
+
         <div className="flex flex-wrap gap-2 pt-2">
           <Badge variant="outline">Technology</Badge>
           <Badge variant="outline">Web Development</Badge>
@@ -435,11 +472,7 @@ export default function EventDetailPage({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="p-6">
               <h3 className="font-semibold text-lg mb-2">Event Information</h3>
-              <p className="text-sm text-muted-foreground">{event.description}</p>
-              <Button variant="outline" className="w-full mt-4">
-                <Share2 className="mr-2 h-4 w-4" />
-                Share Event
-              </Button>
+              <p className="text-sm text-muted-foreground mb-4">{event.description}</p>
             </Card>
 
             <Card className="p-6">

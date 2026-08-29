@@ -29,6 +29,8 @@ export const getEventInfo = async (eventId: string, userId: number) => {
         meetingId: true,
         islimited: true,
         isOnline: true,
+        eventPin: true,
+        eventId: true,
         createdBy: {
           select: {
             id: true,
