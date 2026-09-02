@@ -65,7 +65,7 @@ export default function LoginPage() {
               >
                 <CardTitle className="text-2xl font-bold text-center">Welcome back</CardTitle>
                 <CardDescription className="text-center mt-2">
-                  Enter your credentials to access your account
+                  Enter your credentials to access your real account
                 </CardDescription>
               </motion.div>
             </CardHeader>
